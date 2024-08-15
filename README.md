@@ -3,6 +3,7 @@
 + Compiler là một quá trình biến đổi từ file source code người dùng viết ra thành một file nào đó mà máy tính có thể hiểu và thực thi được.
 ##### Để hiểu rõ hơn thì hình dưới đây sẽ thể hiện 4 bước của quá trình Compiler:
 ![](https://tapit.vn/wp-content/uploads/2017/07/GCC_CompilationProcess.png)
+
 Ở ***bước 1 là quá trình Preprocessor*** sau khi chúng ta viết được một source code (.c, .cpp, .h) sau khi qua bước này file source sẽ chuyển thành file (.i)
 +  Ở bước này file .i xóa bỏ tất cả chú thích, comments của chương trình cũ 
 + Mấy cái code trong file thư viện #include cũng được dán vào hết file .i
