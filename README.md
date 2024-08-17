@@ -42,6 +42,7 @@ Hiểu đơn giản thì pointer nó cũng chỉ là một biến thôi, nhưng 
 Về kích thước size của con trỏ thì phụ thuộc vào kiến trúc của vi xử lý thôi
 #### Các loại pointer 
 **void pointer** là con trỏ có thể trỏ tới bất kì đối tượng nào mà không cần quan tâm kiểu dữ liệu của đối tượng đó là gì.Nhưng mà nếu muốn làm việc gì với biến đó thì phải ép kiểu nó về chính kiểu của biến đó.
+
 **Function Pointer** 
 Hiểu đơn giản thì nó cũng là một biến, và nó sẽ lưu địa chỉ của hàm thui, nó khai báo như nào thì nó có thể trỏ tới một hàm y như vậy.
 ví dụ: ` void (*ptr)(int, int) ` thì có thể trỏ tới ` void tong(int a,int b) ` kiểu kiểu như vậy.
@@ -53,11 +54,15 @@ void calculator(void (*ptr)(int, int), int a, int b)
     ptr(a,b);
 } 
 ```
+
 **Pointer to Constant** hiểu đơn giản là một con trỏ sẽ trỏ tới một đối tượng nhưng không thể thay đổi giá trị của đối tượng đó được mà chỉ có thể đọc giá trị của đối tượng đó mà thôi.
 cú pháp: `int const *ptr = &value;`
+
 **Constant pointer** hiểu đơn giản thì nó là một con trỏ nhưng chỉ được phép trỏ tới một cái địa chỉ duy nhất, được ứng dụng làm nhãn của các ngoại vi hay các gì đó của vi điều khiển.
 cú pháp: `int *const ptr = &value;`
+
 **Pointer to Pointer** hiểu đơn giản thì nó là một con trỏ cấp 2, nghĩa là nó sẽ trỏ tới một con trỏ khác cấp 1, và tất nhiên là nó sẽ thay đổi được giá trị của con trỏ mà nó trỏ tới.
+
 **NULL pointer** là con trỏ không trỏ tới bất kì một địa chỉ nào cả. Hiểu đơn giản là nếu chúng ta khai báo một con trỏ mà chưa cần sử dụng nó thì phải gán nó bằng **NULL** bởi vì nếu không gán bằng **NULL** rất có thể nó sẽ trỏ tới một địa chỉ bất kì trong chương trình và có thể gây xung đột biến. ``` 
 int *ptr = NULL;``` 
 
