@@ -11,6 +11,7 @@ Câu lệnh ở đây sẽ là: ` gcc -E file.c -o file.i `
 +  Ở bước này file .i xóa bỏ tất cả chú thích, comments của chương trình cũ 
 + Mấy cái code trong file thư viện #include cũng được dán vào hết file .i
 + Các định nghĩa của #define cũng được dán vào những nơi đã được sử dụng trong file .i
+
 Ví dụ như hình dưới đây:
 ![](Processor.png)
 
