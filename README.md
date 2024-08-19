@@ -1,10 +1,12 @@
 # Bài 1  Compiler - Macro
 ## 1, Compiler 
 + Compiler là một quá trình biến đổi từ file source code người dùng viết ra thành một file nào đó mà máy tính có thể hiểu và thực thi được.
-##### Để hiểu rõ hơn thì hình dưới đây sẽ thể hiện 4 bước của quá trình Compiler:
+
+**Để hiểu rõ hơn thì hình dưới đây sẽ thể hiện 4 bước của quá trình Compiler:**
 ![](https://tapit.vn/wp-content/uploads/2017/07/GCC_CompilationProcess.png)
 
 Ở ***bước 1 là quá trình Preprocessor*** sau khi chúng ta viết được một source code (.c, .cpp, .h) sau khi qua bước này file source sẽ chuyển thành file (.i)
+
 Câu lệnh ở đây sẽ là: ` gcc -E file.c -o file.i `
 +  Ở bước này file .i xóa bỏ tất cả chú thích, comments của chương trình cũ 
 + Mấy cái code trong file thư viện #include cũng được dán vào hết file .i
@@ -13,16 +15,20 @@ Ví dụ như hình dưới đây:
 ![](Processor.png)
 
 Ở ***bước 2 là quá trình Compiler*** sau khi đã có file .i chương trình tiếp tục chuyển file .i thành file .s được gọi là Assembly code là một ngôn ngữ gần với ngôn ngữ máy nhất.
+
 Câu lệnh ở đây sẽ là: ` gcc -S file.i -o file.s `
 File nó sẽ có kiểu như hình dưới đây
 ![](fileASM.png)
 
 Ở ***bước 3 là quá trình assembler*** sau khi đã có file assembly code (.s) chương trình tiếp tục chuyển file .s thành file .o Để dễ hiểu thì file .o là file code mà máy tính có thể hiểu được và trong file này thì chỉ toàn là mã máy 0 và 1. File nó sẽ có kiểu như hình dưới đây:
+
 Câu lệnh ở đây sẽ là:` gcc -c file.s -o file.i `
 ![](fileO.png)  
 
 Ở ***bước  là quá trình Linker*** Sau khi thực hiện các bước phía bên trên chúng ta sẽ có một đống file .o thì nhiệm vụ bây giờ chúng ta phải hợp nhất chúng lại thành một file duy nhất để máy tính có thể chạy được và đó là tác dụng của quá trình linker, chúng sẽ liên kết tất cả file .o lại thành 1 file .exe duy nhât để có thể thực thi chương trình hoàn chỉnh.
+
 Câu lệnh ở đây sẽ là:` gcc file1.o file2.o file3.o -o output.exe`
+
 Ví dụ như hình dưới:
 ![](Linker.png)
 Đây cũng chỉ là quá trình liên kết nhiều file.o lại với nhau nên định dạng của file.exe cũng chỉ là mã máy 0 và 1.
@@ -47,6 +53,7 @@ return 0;
 }
 ```
 Output: ` size is 100`
+
 Hoặc macro có thể được viết nhiều dòng bằng cách sử dụng dấu ‘\’. như hình dưới:
 ``` C
 #include <stdio.h>
