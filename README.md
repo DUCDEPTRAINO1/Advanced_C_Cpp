@@ -29,8 +29,6 @@ Câu lệnh ở đây sẽ là:` gcc -c file.s -o file.i `
 Ở ***bước  là quá trình Linker*** Sau khi thực hiện các bước phía bên trên chúng ta sẽ có một đống file .o thì nhiệm vụ bây giờ chúng ta phải hợp nhất chúng lại thành một file duy nhất để máy tính có thể chạy được và đó là tác dụng của quá trình linker, chúng sẽ liên kết tất cả file .o lại thành 1 file .exe duy nhât để có thể thực thi chương trình hoàn chỉnh.
 
 Câu lệnh ở đây sẽ là:` gcc file1.o file2.o file3.o -o output.exe`
-
-Ví dụ như hình dưới:
 ![](Linker.png)
 Đây cũng chỉ là quá trình liên kết nhiều file.o lại với nhau nên định dạng của file.exe cũng chỉ là mã máy 0 và 1.
 
