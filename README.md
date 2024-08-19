@@ -173,6 +173,7 @@ Hiểu đơn giản là thư viện này giúp cung cấp các macro và định
 + **va_start** thì là một hàm dùng để nhận biết nơi bắt đầu đọc các biến có thể thay đổi và được đánh dấu bằng một nhãn kiểu char.
 + **va_arg** truy cập từng đối số trong danh sách các đối số biến đổi được tính từ cái nhãn  và ép kiểu chúng từ kiểu char về kiểu mong muốn, ví dụ kiểu int, float,... Mỗi lần gọi va_arg, macro này sẽ trả về giá trị của đối số tiếp theo và tự động di chuyển đến đối số tiếp theo.
 + **va_end** dùng thể thu hồi con trỏ đã được khai báo của kiểu dữ liệu va_list.
+
 ví dụ khi sử dụng thư viện 
 ``` C
 int sum(int count, ...) {
