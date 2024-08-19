@@ -30,6 +30,7 @@ Câu lệnh ở đây sẽ là:` gcc -c file.s -o file.i `
 
 Câu lệnh ở đây sẽ là:` gcc file1.o file2.o file3.o -o output.exe`
 ![](Linker.png)
+
 Đây cũng chỉ là quá trình liên kết nhiều file.o lại với nhau nên định dạng của file.exe cũng chỉ là mã máy 0 và 1.
 
 
@@ -122,6 +123,7 @@ Output: ` Hello World!!!`
 
 
 Chỉ thị tiền xử lý **#ifdef, #ifndef** được hiểu đơn giản là đã được định nghĩa hoặc là chưa được định nghĩa. Với #ifdef thì nếu một #define trong điều kiện của #ifdef đã được định nghĩa thì nó sẽ thực hiện các câu lệnh trong điều kiện còn không thì chương trình sẽ không thực hiện nữa. Còn với #ifndef thì ngược lại, nếu một #define trong điều kiện của #ifndef chưa được định nghĩa thì nó sẽ thực hiện các câu lệnh trong điều kiện còn nếu đã được định nghĩa rồi thì nó sẽ không thực hiện nữa. Với #ifndef thì được sử dụng như là tránh các lỗi liên quan tới việc chèn thư viện bị trùng nhau trong một file.
+
 Ta có một ví dụ sau: Nếu macro MATH_H đã được define trước đó thì ifndef không thực hiện gì cả, còn nếu nó chưa được define trước đó thì nó sẽ define MATH_H và thực hiện các lệnh ở dưới như bình thường:
 ``` C
 #include <stdio.h>
@@ -232,6 +234,7 @@ Hiểu đơn giản thì pointer nó cũng chỉ là một biến thôi, nhưng 
 Về kích thước size của con trỏ thì phụ thuộc vào kiến trúc của vi xử lý thôi
 #### Các loại pointer 
 **void pointer** là con trỏ có thể trỏ tới bất kì đối tượng nào mà không cần quan tâm kiểu dữ liệu của đối tượng đó là gì.Nhưng mà nếu muốn làm việc gì với biến đó thì phải ép kiểu nó về chính kiểu của biến đó.
+
 Dưới đây là một ví dụ cơ bản về con trỏ void
 ``` C
 #include <stdio.h>
@@ -267,6 +270,7 @@ int main() {
 
 **Function Pointer** 
 Hiểu đơn giản thì nó cũng là một biến, và nó sẽ lưu địa chỉ của hàm thui, nó khai báo như nào thì nó có thể trỏ tới một hàm y như vậy.
+
 ví dụ: ` void (*ptr)(int, int) ` thì có thể trỏ tới ` void add(int a,int b) ` kiểu kiểu như vậy.
 hoặc đẳng cấp hơn thì là dùng làm đối số cho một hàm ví dụ:
 ``` C
@@ -306,7 +310,9 @@ int main() {
 
 **Pointer to Constant** hiểu đơn giản là một con trỏ sẽ trỏ tới một đối tượng nhưng không thể thay đổi giá trị của đối tượng đó được mà chỉ có thể đọc giá trị của đối tượng đó mà thôi.
 cú pháp: `int const *ptr = &value;`
+
 Khi bạn truyền con trỏ đến hằng vào một hàm, bạn đảm bảo rằng hàm đó sẽ không thể thay đổi dữ liệu gốc. Điều này rất quan trọng trong các tình huống khi bạn chỉ muốn một hàm đọc dữ liệu mà không thay đổi nó.
+
 ví dụ:
 ``` C
 void printArray(const int *arr, int size) {
@@ -320,6 +326,7 @@ void printArray(const int *arr, int size) {
 ```
 **Constant pointer** hiểu đơn giản thì nó là một con trỏ nhưng chỉ được phép trỏ tới một cái địa chỉ duy nhất. Trong các hệ thống nhúng, nơi các con trỏ có thể trỏ đến các địa chỉ cố định trong bộ nhớ, việc sử dụng con trỏ hằng giúp đảm bảo rằng con trỏ sẽ luôn trỏ đến đúng vị trí bộ nhớ mà không bị thay đổi.
 cú pháp: `int *const ptr = &value;`
+
 ví dụ: Giả sử bạn có một thanh ghi điều khiển LED trên một vi điều khiển và bạn muốn viết một giá trị vào thanh ghi này để điều khiển LED. Bạn có thể sử dụng con trỏ hằng để đảm bảo rằng địa chỉ của thanh ghi này không bị thay đổi.
 ```C
 #include <stdio.h>
@@ -346,6 +353,7 @@ int main() {
 ```
 
 **Pointer to Pointer** hiểu đơn giản thì nó là một con trỏ cấp 2, nghĩa là nó sẽ trỏ tới một con trỏ khác cấp 1, và tất nhiên là nó sẽ thay đổi được giá trị của con trỏ mà nó trỏ tới.
+
 Dưới đây là một số ví dụ cụ thể để minh họa cách sử dụng con trỏ đến con trỏ:
 ```C
 #include <stdio.h>
