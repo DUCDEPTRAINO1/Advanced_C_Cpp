@@ -9,21 +9,21 @@ typedef struct {
 
 /* 
 Hàm này so sánh hai chuỗi ký tự str1 và str2. Nó hoạt động bằng cách so sánh từng ký tự từ đầu đến cuối. 
-Nếu tìm thấy một ký tự khác nhau hoặc đến cuối chuỗi (ký tự null '\0'), nó sẽ trả về sự chênh lệch giữa hai ký tự hiện tại 
+Nếu tìm thấy một ký tự khác nhau hoặc đến cuối chuỗi (ký tự null '\0'), nó sẽ trả về sự chênh lệch giữa hai ký tự hiện tại
+Việc return về kiểu const unsigned char* là để tránh sẽ có một số kí tự vượt quá ngưỡng của bảng kí tự ASCII(128) thì nó sẽ trả 
+về một giá trị chính xác nhất.
 */
 int stringCompare(const char *str1, const char *str2) {
-   while (*str1 && (*str1 == *str2)) {
+   while (*str1 && (*str1 == *str2)) {  
        str1++;  
        str2++;
    }
-   return *(const unsigned char*)str1 - *(const unsigned char*)str2;
+   return *(const unsigned char*)str1 - *(const unsigned char*)str2; 
 }
 
 // Hàm so sánh theo tên
 /* Hàm này so sánh hai sinh viên dựa trên tên của họ bằng cách gọi hàm stringCompare */
-int compareByName(const void *a, const void *b) {
-   SinhVien *sv1 = (SinhVien *)a;
-   SinhVien *sv2 = (SinhVien *)b;
+int compareByName(const SinhVien *sv1, const SinhVien *sv2) {
    return stringCompare(sv1->ten, sv2->ten);
 }
 
@@ -31,28 +31,20 @@ int compareByName(const void *a, const void *b) {
 /* Hàm này so sánh hai sinh viên dựa trên điểm trung bình. Nó trả về
 1 nếu điểm của sinh viên sv1 lớn hơn điểm của sv2
 0 nếu điểm của sinh viên sv1 bé hơn hoặc bằng điểm của sv2 */
-int compareByDiemTrungBinh(const void *a, const void *b)
-{
-    SinhVien *sv1 = (SinhVien *)a;
-    SinhVien *sv2 = (SinhVien *)b;
+int compareByDiemTrungBinh(const SinhVien *sv1, const SinhVien *sv2) {
     if (sv1->diemTrungBinh > sv2->diemTrungBinh)
         return 1;
     else
         return 0;
 }
 
-// Hàm so sánh theo ID
-/* Hàm này so sánh hai sinh viên dựa trên ID. Nó trả về sự chênh lệch giữa ID của sv1 và sv2 */
-int compareByID(const void *a, const void *b) {
-   SinhVien *sv1 = (SinhVien *)a;
-   SinhVien *sv2 = (SinhVien *)b;
+/* Hàm so sánh theo ID */
+int compareByID(const SinhVien *sv1, const SinhVien *sv2) {
    return sv1->id - sv2->id;
 }
 
-// Hàm sắp xếp chung
-/* Hàm sort thực hiện việc sắp xếp danh sách sinh viên (array) theo một tiêu chí so sánh được xác định bởi con trỏ hàm compareFunc.
-Con trỏ hàm này có thể là một trong các hàm so sánh đã định nghĩa ở trên (compareByName, compareByDiemTrungBinh, hoặc compareByID). */
-void sort(SinhVien array[], size_t size, int (*compareFunc)(const void *, const void *)) {
+/* Hàm sắp xếp chung */
+void sort(SinhVien array[], size_t size, int (*compareFunc)(const SinhVien *, const SinhVien *)) {
    int i, j;
    SinhVien temp;
    for (i = 0; i < size-1; i++)    
