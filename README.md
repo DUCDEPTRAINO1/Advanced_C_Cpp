@@ -381,9 +381,172 @@ int main() {
 **NULL pointer** là con trỏ không trỏ tới bất kì một địa chỉ nào cả. Hiểu đơn giản là nếu chúng ta khai báo một con trỏ mà chưa cần sử dụng nó thì phải gán nó bằng **NULL** bởi vì nếu không gán bằng **NULL** rất có thể nó sẽ trỏ tới một địa chỉ bất kì trong chương trình và có thể gây xung đột biến. ``` 
 int *ptr = NULL;``` 
 
+# Bài 4: Extern - Static - Volatile - Register
 
+## 1,Biến Extern
+Tại sao phải sử dụng biến này? Biến này khác gì so với **#include**
+**#include** được sử dụng để chèn nội dung tệp tiêu đề vào tệp nguồn và để khai báo các hàm, biến, hoặc cấu trúc mà bạn sẽ sử dụng trong tệp nguồn đó.
 
+**extern** được sử dụng để khai báo rằng một biến hoặc hàm đã được định nghĩa ở nơi khác, và bạn muốn sử dụng nó mà không định nghĩa lại.  Khi bạn khai báo một biến với từ khóa **extern**, bạn đang nói với trình biên dịch rằng biến này đã được định nghĩa ở một nơi khác, và bạn chỉ đang tham chiếu đến nó. Ta có ví dụ sau đây:
 
+```C
+// file1.c
+int x = 10;  // Định nghĩa biến x
+
+// file2.c
+extern int x;  // Tham chiếu đến biến x đã được định nghĩa ở file1.c
+
+```
+Chú ý: ***Một lưu ý nữa là đối với các hàm thì cũng có tác dụng tương tự như vậy***
+
+Nếu bạn định nghĩa biến toàn cục trong tệp tiêu đề và sử dụng #include nó ở nhiều tệp nguồn khác nhau, bạn sẽ gặp lỗi liên kết do việc định nghĩa cùng một biến nhiều lần.
+
+Và **#ifndef** không có tác dụng trong trường hợp này nha bởi vì là #ifndef chỉ có tác dụng trong 1 file thôi, còn nếu ta #include trong nhiều tệp nguồn khác nhau nó sẽ bị lỗi ở quá trình linker á.
+
+ví dụ:
+```C
+// myheader.h
+int x = 10;  // Định nghĩa biến x
+
+// file1.c
+#include "myheader.h"
+
+// file2.c
+#include "myheader.h"  // Lỗi do x đã được định nghĩa ở cả file1.c và file2.c
+```
+
+Nói chung là việc kết hợp đúng giữa **#include** và **extern** giúp bạn viết mã nguồn dễ bảo trì và tránh được các lỗi biên dịch không mong muốn.
+
+## 2, Biến Static
+
+Trong ngôn ngữ lập trình C, từ khóa static có nhiều ứng dụng khác nhau, tùy thuộc vào ngữ cảnh mà nó được sử dụng. static có thể được áp dụng cho biến cục bộ, biến toàn cục, và hàm. Nhưng hiểu đơn giản thì các bạn có thể hiểu là biến static được khai báo ở đâu thì nó chỉ có thể sử dụng trong đúng cái block đó thôi. Và biến static thì dù khai báo ở đâu thì nó luôn luôn được lưu ở vùng data trong **memory layout** nên là dù nó có khai báo với chức năng local thì nó cũng không bị mất đi giá trị sau mỗi lần gọi hàm.
+Sau đây chúng ta sẽ đi chi tiết về các loại biến static:
+
+**1, Biến static local**
+Như đã nói ở trên thì biến static sẽ không bị mất giá trị sau mỗi lần gọi hàm. Thông thường, các biến cục bộ sẽ được khởi tạo lại mỗi khi hàm được gọi, nhưng với static, biến chỉ được khởi tạo một lần duy nhất và giữ nguyên giá trị của nó cho đến khi chương trình kết thúc.
+
+ví dụ:
+```C
+void count() {
+    static int counter = 0;  // Chỉ được khởi tạo một lần
+    counter++;
+    printf("%d\n", counter);
+}
+
+int main() {
+    count();  
+    count();  
+    count();  
+    return 0;
+}
+```
+`Output 1`     `2`  `3`
+**2, Biến static global**
+Như đã nói ở trên thì biến static được khai báo ở đâu thì nó chỉ có thể sử dụng trong cái block đó thôi, vậy nên biến static global được khai báo thì có thể sử dụng trong toàn tệp tin mà nó định nghĩa, nhưng nó không thể được truy cập từ bất cứ 1 file nào khác cho dù là sử dụng từ khóa extern.
+
+ví dụ:
+```C
+// file1.c
+static int x = 10;  // Chỉ có thể truy cập trong file1.c
+
+// file2.c
+extern int x;  // Lỗi: không thể truy cập biến x trong file1.c
+
+```
+**3, Hàm static**
+Đối với hàm thì nó cũng tương tự như biến static global thôi không khác gì cả. Điều này ngăn chặn hàm không thể bị truy cập từ các tệp tin khác
+
+ví dụ:
+```C
+// file1.c
+static void myFunction() {
+    printf("Hello from static function\n");
+}
+
+// file2.c
+extern void myFunction();  // Lỗi: không thể truy cập hàm myFunction trong file1.c
+```
+**4,Ứng dụng cụ thể của biến static trong các dự án lập trình lớn**
+Đối với biến **static local** thì cho phép biến trong hàm giữ giá trị của nó mà không phải sử dụng biến toàn cục, giúp giữ cho mã nguồn gọn gàng và hạn chế phạm vi của biến.   
+
+Ví dụ: Một hàm xử lý sự kiện có thể cần lưu trữ số lượng sự kiện đã xử lý mà không muốn tạo biến toàn cục:
+```C
+void processEvent() {
+    static int eventCount = 0;
+    eventCount++;
+    printf("Processed %d events\n", eventCount);
+}
+```
+Đối với biến **static global** và **hàm static** giúp tránh xung đột biến và hàm trong các modul dự án lớn. Bởi vì trong dự án nhiều file có thể đặt tên các biến giống nhau.
+
+ví dụ: Giả sử bạn có hai module riêng biệt, mỗi module có một biến đếm
+```C
+// module1.c
+static int counter = 0;
+void incrementCounter1() {
+    counter++;
+    printf("Module 1 counter: %d\n", counter);
+}
+
+// module2.c
+static int counter = 0;
+void incrementCounter2() {
+    counter++;
+    printf("Module 2 counter: %d\n", counter);
+}
+```
+
+Hoặc nếu bạn đã học tính đóng gói trong OOP thì biến static giúp ẩn thông tin chi tiết khi triển khai một hàm, để tranh việc ai đó có thể truy cập vô và sửa các chi tiết khiến hàm chính của chúng ta không còn được chính xác nữa.
+
+Ví dụ: Bạn có thể có một hàm tiện ích hoặc biến hỗ trợ chỉ nên được sử dụng trong nội bộ một module, không muốn nó bị lộ ra ngoài
+```C
+// file_utils.c
+static void helperFunction() {
+    // do something
+}
+
+void publicFunction() {
+    helperFunction();  // Sử dụng hàm tĩnh bên trong module
+}
+```
+## 3, Biến Volatile
+Biến **volatile** rất quan trọng trong lập trình hệ thống nhúng, biến này chỉ ra cho trình biên dịch biết rằng là nó có thể thay đổi bất cứ lúc nào và trình biên dịch không cần thiết phải can thiệp tối ưu nó.
+
+Bởi vì trình biên dịch có chức năng tối ưu biến, nghĩa là nếu trình biên dịch nhận thấy rằng một biến không hề bị thay đổi trong chương trình thì nó sẽ không quan tâm tới biến đó nữa, nhưng nếu biến đó đảm nhận một chức năng nào đó từ ngoại vi nó sẽ không được cập nhật kịp thời khiến chức năng của hệ thống bị sai.
+
+ví dụ trong hệ thống nhúng:
+```C
+volatile int *statusUSB = (int *)0x40021000;  // Địa chỉ giả định của thanh ghi chứa trạng thái của USB
+while (*statusUSB & 0x01 == 0) {
+    // Chờ đến khi bit 0 của thanh ghi trạng thái được set
+}
+```
+Ở đây, **statusUSB** trỏ tới một thanh ghi phần cứng mà giá trị của nó có thể thay đổi bất kỳ lúc nào bởi phần cứng. Từ khóa **volatile** đảm bảo rằng mỗi lần lặp, giá trị thực sự của thanh ghi được đọc từ bộ nhớ.
+
+## 4, Biến register
+Biến này được sử dụng trong trường hợp là biến này cần sử dụng nhiều và cần tốc độ truy cập nhanh nhất có thể. Các biến bình thường thì sẽ được lưu trữ ở Ram nhưng đối với biến Register sẽ được lưu trữ thẳng ở các thanh ghi điều này làm tăng tốc độ truy cập hơn rất nhiều. Ta có thể xem qua hình vẽ dưới đây để hiểu rõ hơn 
+
+![](Bien_Register.png)
+
+Hình vẽ này biểu thị việc xử lí tăng giá trị của biến a, nhưng nếu biến này lưu ở Ram thì quá trình này phải mất 4 bước kể từ lúc biến này được khai báo cho tới khi nó được tăng giá trị. Nó sẽ phải đi đến Register lưu giá trị rồi mới đi qua bộ tính toán ALU rồi sau đó mới chở về Register rồi mới trở về Ram. Nhưng nếu biến này được lưu trực tiếp ở Register thì nó sẽ chỉ mất 2 bước để thực hiện tính toán, điều này làm tăng đáng kể thời gian thực hiện chương trình.
+
+**Các hạn chế khi sử dụng biến Register**
+
++ Bởi vì Ram thì nhiều nhưng Register thì ít nên việc tất cả các biến đều được sử dụng với từ khóa là Register là điều không thể. Người lập trình nên cân nhắc khi sử dụng biến Register.
++ **Không sử dụng với mảng hoặc biến có kích thước lớn**: Vì các thanh ghi có kích thước giới hạn, biến register không nên được sử dụng với mảng hoặc các cấu trúc dữ liệu lớn.
++ **Và một lưu ý nữa là** biến Register chỉ được khai báo dưới dạng local. Bởi vì các biến local chỉ tồn tại trong thời gian hàm chứa chúng đang thực thi. Khi hàm kết thúc, các biến này không còn tồn tại, và thanh ghi có thể được sử dụng cho các tác vụ khác. Điều này phù hợp với đặc tính của thanh ghi, vốn là tài nguyên có thời gian tồn tại ngắn và liên quan chặt chẽ đến luồng thực thi hiện tại.
+
+ví dụ về 1 chương trình sử dụng biến Register
+```C
+void sumArray(int *arr, int size) {
+    register int sum = 0;
+    register int i;
+    for (i = 0; i < size; i++) {
+        sum += arr[i];
+    }
+    printf("Sum: %d\n", sum);
+}
+```
 
 
 
