@@ -1,4 +1,4 @@
-# Bài 1  Compiler - Macro
+# Bài 1:  Compiler - Macro
 ## 1, Compiler 
 + Compiler là một quá trình biến đổi từ file source code người dùng viết ra thành một file nào đó mà máy tính có thể hiểu và thực thi được.
 
@@ -229,7 +229,7 @@ Output: ` assertion "b != 0" failed: file "D:\tuhocC_hehe\Workspace_HALA\STDARG\
 Ta có thể thấy thư viện này in cho chúng ta biết đây là lỗi gì và ở dòng nào, hàm nào. Quá là đẳng cấp xịn sò.
 
 
-# Bài 3 Pointer 
+# Bài 3: Pointer 
 Hiểu đơn giản thì pointer nó cũng chỉ là một biến thôi, nhưng đặc biệt hơn thì biến này sẽ chỉ lưu địa chỉ của một đối tượng khác ví dụ như biến khác hoặc hàm khác,... Điều này giúp nó có thể truy suất tới địa chỉ của một đối tượng khác và có thể thay đổi giá trị của đối tượng đó.
 Về kích thước size của con trỏ thì phụ thuộc vào kiến trúc của vi xử lý thôi
 #### Các loại pointer 
@@ -509,6 +509,25 @@ void publicFunction() {
     helperFunction();  // Sử dụng hàm tĩnh bên trong module
 }
 ```
+
+***Nhân tiện ở đây tui sẽ giải thích thêm về sự khác nhau giữa file.h và file.c***
+
+**File.h** sẽ chứa các khai báo (declarations) như khai báo hàm, biến, macro, và các định nghĩa kiểu dữ liệu (struct, enum, typedef, v.v.). Chúng ta sẽ xem qua ví dụ ở đây để hiểu khai báo nghĩa là gì.
+```C
+int add(int a, int b);  // Khai báo hàm add với hai tham số kiểu int và trả về kiểu int
+
+extern int x;  // Khai báo biến x, nhưng không cấp phát bộ nhớ cho nó
+```
+Vậy thì khai báo là việc thông báo cho trình biên dịch biết về sự tồn tại của một biến, hàm, hoặc kiểu dữ liệu mà không cung cấp toàn bộ thông tin chi tiết.
+
+**File.c** chứa các định nghĩa (definitions) thực tế của hàm, biến, và các logic xử lý chương trình. Xem ví dụ dưới để hiểu thêm.
+```C
+int add(int a, int b) { // Cung cấp chi tiết cách hoạt động của hàm
+    return a + b;
+}
+int x = 10;  // Định nghĩa biến x và cấp phát bộ nhớ cho nó với giá trị ban đầu là 10
+```
+Vậy thì định nghĩa là cung cấp toàn bộ thông tin chi tiết về một biến, hàm, hoặc kiểu dữ liệu, bao gồm cả việc cấp phát bộ nhớ (đối với biến) hoặc cung cấp nội dung chi tiết (đối với hàm).
 ## 3, Biến Volatile
 Biến **volatile** rất quan trọng trong lập trình hệ thống nhúng, biến này chỉ ra cho trình biên dịch biết rằng là nó có thể thay đổi bất cứ lúc nào và trình biên dịch không cần thiết phải can thiệp tối ưu nó.
 
@@ -547,6 +566,92 @@ void sumArray(int *arr, int size) {
     printf("Sum: %d\n", sum);
 }
 ```
+
+# Bài 5: Goto - setjmp.h 
+
+## 1, Goto
+**Goto** là gì? 
+Đây là một từ khóa trong C, nó có tác dụng là sẽ nhảy tới vị trí một cái nhãn nào đó đã được tạo trước. Và Goto có tác dụng khá tốt khi có thể được dùng để thoát khỏi những vòng lặp một cách linh hoạt mà không phải sử dụng tới **break** nhiều lần. Xem ví dụ để dễ hiểu hơn.
+
+```C
+#include <stdio.h>
+
+int main() {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (i == 2 && j == 3) {
+                goto end_loops;  // Thoát khỏi cả hai vòng lặp
+            }
+            printf("i = %d, j = %d\n", i, j);
+        }
+    }
+
+end_loops:
+    printf("Đã thoát khỏi vòng lặp.\n");
+    return 0;
+}
+```
+
+**Lưu ý**: Và một lưu ý nhỏ ở đây là Goto chỉ có tác dụng ở local, có nghĩa là nó chỉ sử dụng được trong phạm vi 1 hàm nào đó, còn ở ngoài thì chịu chết nhá.
+
+## 2, setjmp.h
+Đây là một thư viện trong C thường được sử dụng để xử lý ngoại lệ và nó cung cấp cho người dùng 2 hàm chính đó là setjmp và longjmp.
+
+**Trước tiên thì xử lí ngoại lệ có nghĩa là gì?**
+**Xử lý ngoại lệ** (Exception Handling) là một cơ chế trong lập trình cho phép một chương trình phản ứng lại các tình huống bất thường hoặc lỗi xảy ra trong quá trình thực thi. Những lỗi này có thể là việc chia cho số 0, truy cập vào vùng nhớ không hợp lệ, lỗi I/O, hoặc các tình huống khác mà chương trình không thể dự đoán trước hoặc xử lý trong mã thông thường.
+
+Vậy tác dụng của hàm thư viện setjmp là gì?
+setjmp được dùng để quản lí quá trình nhảy tới mọi nơi trong chương trình (fix được các hạn chế của goto). Chúng cho phép bạn lưu trữ trạng thái của chương trình tại một thời điểm cụ thể và sau đó quay lại trạng thái đó từ bất kỳ vị trí nào trong mã. Để rõ hơn chúng ta sẽ đi tìm hiểu chức năng của hai hàm setjmp và longjmp rồi tới ví dụ.
+
+**setjmp**: lưu trữ trạng thái hiện tại của môi trường chương trình vào một biến kiểu jmp_buf. Trạng thái này bao gồm các thông tin về con trỏ chương trình, ngăn xếp, và các biến cục bộ cần thiết để khôi phục trạng thái của chương trình sau này.
+**longjmp**: Hàm longjmp được sử dụng để nhảy trở lại vị trí đã lưu bởi setjmp, khôi phục trạng thái môi trường đã được lưu trữ trước đó.
+
+Chúng ta cùng xem qua ví dụ cụ thể để hiểu rõ hơn:
+```C
+#include <stdio.h>
+#include <setjmp.h>
+
+jmp_buf buf;
+
+void second() {
+    printf("Đang trong hàm second\n");
+    longjmp(buf, 1);  // Nhảy trở lại vị trí setjmp
+}
+
+void first() {
+    printf("Đang trong hàm first\n");
+    second();  // Gọi hàm second
+    printf("Điều này sẽ không bao giờ được in ra.\n");
+}
+
+int main() {
+    if (setjmp(buf)) {
+        printf("Đã nhảy trở lại từ hàm second\n");
+    } else {
+        printf("Gọi hàm first\n");
+        first();  // Gọi hàm first
+    }
+    return 0;
+}
+```
+Output:
+```
+Gọi hàm first
+Đang trong hàm first
+Đang trong hàm second
+Đã nhảy trở lại từ hàm second
+```
+thư viện setjmp.h được ứng dụng rất nhiều trong nhúng trong việc xử lí các lỗi phần cứng. Giả sử bạn có một hệ thống nhúng điều khiển thiết bị cảm biến và bạn cần thực hiện một loạt các phép đo. Nếu xảy ra lỗi trong quá trình đọc dữ liệu từ cảm biến (ví dụ, cảm biến bị ngắt kết nối hoặc lỗi I/O), hệ thống cần khôi phục lại trạng thái trước đó mà không cần khởi động lại toàn bộ hệ thống.
+
+**Một câu hỏi ở đây là việc sử lí lỗi của setjmp.h khác gì so với sử dụng thư viện assert.h?**
+Hiểu đơn giản như z đi he:
+
+khi sử dụng **assert** mà dính phải cái điều kiện sai, chương trình sẽ in ra thông báo lỗi và dừng chương trình ngay lập tức. Và cái assert này thì sử dụng trong trường hợp kiểm tra các lỗi logic mà không nên xảy ra trong điều kiện bình thường.
+
+Còn đối với **setjmp** mà dính phải cái điều kiện bị lỗi chương trình thay vì dừng lại nó sẽ nhảy tới cái vị trí an toàn trước đó và tiếp tục thực hiện chương trình. Sử dụng cái thư viện **setjmp** này cực kì hữu ích trong các hệ thống nhúng mà việc dừng chương trình là không thể. 
+
+
+
 
 
 
