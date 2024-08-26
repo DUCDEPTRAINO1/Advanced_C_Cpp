@@ -650,6 +650,77 @@ khi sử dụng **assert** mà dính phải cái điều kiện sai, chương tr
 
 Còn đối với **setjmp** mà dính phải cái điều kiện bị lỗi chương trình thay vì dừng lại nó sẽ nhảy tới cái vị trí an toàn trước đó và tiếp tục thực hiện chương trình. Sử dụng cái thư viện **setjmp** này cực kì hữu ích trong các hệ thống nhúng mà việc dừng chương trình là không thể. 
 
+# Bài 6: Bitmask
+
+## 1, Bitmask 
+**Bitmask** là gì? 
+Là 1 kỹ thuật sử dụng các toán tử của bit để thao tác và kiểm soát từng bit cụ thể trong 1 biến số nguyên. Ví dụ như dùng thể thiết lập một bit lên 1, hoặc xóa một bit về 0 hoặc cũng có thể kiểm tra một bit mang giá trị là bao nhiêu. Điều đặc biệt ở đây là nó sẽ không làm ảnh hưởng tới các bit khác khi ta thao tác đúng.
+
+**Để hiểu rõ hơn về Bitmask, sau đây ta sẽ đi vào tìm hiểu các toán tử thao tác bit**
+
+**a, Phép NOT**
+Dùng để đảo ngược tất cả bit trong một biến số nguyên, ví dụ như 0 thành 1 và 1 sẽ thành 0. Ta xem ví dụ sau để hiểu rõ hơn.
+```C
+uint8_t x = 0;        // 0000 0000
+x = ~x;           // 1111 1111
+// Kết quả: x = 1111 1111
+```
+**b, Phép AND** 
+Giống như việc nhân giữa từng cặp bit của hai số với nhau và kết quả sẽ là 1 nếu cả hai cặp bit là 1 và sẽ là 0 nếu một trong hai cặp bit bằng 0. Ta xem ví dụ sau đây.
+```C
+uint8_t a = 0;        // 0000 0000
+uint8_t b = 3;        // 0000 0011
+uint8_t c = a & b;    // 0000 0000
+// Kết quả: c = 0000 0000
+```
+**c, phép OR**
+Để cho dễ nhớ thì cứ có bit 1 thì sẽ là 1 còn cả hai bit bằng 0 thì mới bằng 0. Xem ví dụ sau đây.
+```C
+uint8_t a = 0;        // 0000 0000
+uint8_t b = 3;        // 0000 0011
+uint8_t c = a | b;    // 0000 0011
+// Kết quả: c = 0000 0011
+```
+**d, Phép XOR**
+Để cho dễ nhớ thì cứ hai bit giống nhau thì sẽ bằng 0 ví dụ (0  0 = 0) hoặc (1 1 = 0) , còn hai bit khác nhau thì sẽ là 1 ví dụ (0 1 = 1) hoặc (1 0 = 1). Xem ví dụ sau đây.
+```C
+uint8_t a = 0;        // 0000 0001
+uint8_t b = 3;        // 0000 0011
+uint8_t c = a ^ b;    // 0000 0010
+// Kết quả: c = 0000 0010
+```
+Ta có bảng sự thật của các phép toán bit sau:
+![](CacPhepToan.png)
+
+**e, Phép Dịch Bit**
+Dùng để di chuyển bit sang trái hoặc sang phải.
+
+Ví dụ như sang trái thì ta sử dụng **<<** thì điều này sẽ khiến các bit ở bên sau cùng bên phải sẽ dịch sang trái và các bit trái sau cùng sẽ bị thay thế tương ứng bằng 0. Ta có ví dụ sau:
+``` C
+uint8_t a = 1;  // 0000 0001
+a = a << 3;     // 0000 1000
+``` 
+Và sang phải phải thì cũng tương tự như vậy thôi. Ta xem lun ví dụ cho dễ hiểu.
+``` C
+uint8_t a = 8;  // 0000 1000
+a = a >> 3;     // 0000 0001
+``` 
+
+## Ứng dụng của các toán tử Bit 
+**1, Set bit**
+Để thiết lập một bit cụ thể thành 1, bạn sử dụng toán tử OR (|) với một bitmask có bit tương ứng là 1. Ví dụ:
+```C
+int x = 0;        // 0000 0000
+x |= (1 << 2);    // Thiết lập bit thứ 2 (bắt đầu từ 0)
+// Kết quả: x = 0000 0100
+```
+**2, Clear bit**
+Để xóa một bit cụ thể (tức là đặt nó về 0), bạn sử dụng toán tử AND (&) với một bitmask có bit tương ứng là 0 (sử dụng phép NOT ~). Ví dụ:
+``` C
+int x = 4;        // 0000 0100
+x &= ~(1 << 2);   // Xóa bit thứ 2
+// Kết quả: x = 0000 0000
+```
 
 
 
