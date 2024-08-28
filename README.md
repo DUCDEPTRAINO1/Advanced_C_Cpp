@@ -722,8 +722,149 @@ x &= ~(1 << 2);   // Xóa bit thứ 2
 // Kết quả: x = 0000 0000
 ```
 
+# Bài 7: Struct - Union
 
+## 1, Struct 
 
+**Struct là gì ?**
 
+Struct là một kiểu cấu trúc dữ liệu do người dùng tự định nghĩa, đặc biệt ở đây là struct cho phép nhóm nhiều kiểu dữ liệu khác nhau lại với nhau. Cho phép tạo ra một kiểu dữ liệu lớn bao gồm nhiều thành phần dữ liệu khác nhau.
 
+**Cú pháp thường dùng để tạo và sử dụng một struct.**
+```C
+// khởi tạo 
+typedef Struct {
+    char ten[50];
+    int tuoi;
+    float DiemTB;
+} SinhVien;
 
+// Khai báo một biến kiểu Struct
+SinhVien sv1;
+
+// gán giá trị cho các members trong Struct
+sv1.tuoi = 20;
+strcpy(sv1.ten, "Nguyen Van A");
+sv1.DiemTB = 8.5;
+```
+
+**Chúng ta cũng có thể dùng struct truyền vào 1 hàm như dưới đây**
+```C
+void hienThiSinhVien(SinhVien sv1) {
+    printf("Ten: %s\n", sv1.ten);
+    printf("Tuoi: %d\n", sv1.tuoi);
+    printf("Diem trung binh: %.2f\n", sv1.DiemTB);
+}
+```
+**Hoặc chúng ta cũng có thể truyền con trỏ đến Struct để có thể thay đổi phần từ của Struct như dưới đây**
+```C
+int thaydoi(SinhVien *sv1){
+    sv1->tuoi = 5;
+    sv1->DiemTB = 6;
+}
+```
+
+**Lưu ý** : Một điều quan trọng trong việc sắp sếp các phần tử trong Struct, là việc bạn sắp xếp các phần tử trong Struct như thế nào ảnh hưởng rất lớn đến kích thước size của Struct. Vậy nên trong khi lập trình người kỹ sư phải để ý tới việc sắp xếp các phần tử bên trong Struct một cách hợp lí để có thể tiết kiệm tài nguyên nhất có thể.
+
+**khái niệm về padding**
+C không đảm bảo rằng các thành viên của struct sẽ được đặt liên tiếp trong bộ nhớ. Để tối ưu hiệu suất truy cập bộ nhớ, các thành viên có thể được căn chỉnh (aligned) đến các địa chỉ bộ nhớ cụ thể, dẫn đến việc thêm các byte đệm (padding) giữa các thành viên.
+![](Byte_padding.png)
+
+**khái niệm về aligned**
+Các kiến trúc phần cứng thường yêu cầu rằng dữ liệu phải được căn chỉnh theo các biên cố định (ví dụ: int phải bắt đầu tại địa chỉ chia hết cho 4, double phải chia hết cho 8). Điều này có thể dẫn đến việc thêm padding để duy trì căn chỉnh.
+
+Vậy nên việc sắp xếp sao cho các byte_padding là ít nhất thì sẽ tiết kiệm được tài nguyên nhất.
+
+![](Sapxepbien.png)
+
+Ta có thể thấy ở hình trên cùng là Struct với ba biến giống nhau nhưng cách sắp xếp khác nhau đã dẫn đến việc kích thước size khác nhau.
+
+## 2, Union
+**Union** là gì?
+
+Về cơ bản thì Union cũng giống như Struct, cũng là 1 cấu trúc dữ liệu do người dùng tự định nghĩa và cũng nhóm nhiều kiểu dữ liệu lại với nhau, nhưng điều đặc biệt ở đây là kích thước của union thì sẽ bằng kích thước của phần tử lớn nhất trong Union cộng với padding nếu có. Và điều này giúp tiết kiệm được tài nguyên của bộ nhớ bằng cách chia sẻ tài nguyên của bộ nhớ cho nhiều phần tử sài chung. Nhưng trong một thời điểm thì chỉ có một thành viên của union có thể sử dụng.
+
+**Cú pháp thường dùng để tạo và sử dụng một union.**
+
+Cú pháp tạo ra thì y hệt với Struct chỉ thay thể tên struct bằng Union
+```C
+// khởi tạo 
+typedef Union {
+    char ten[50];
+    int tuoi;
+    float DiemTB;
+} SinhVien;
+
+// Khai báo một biến kiểu Union
+SinhVien sv1;
+
+// gán giá trị cho các members trong Union
+sv1.tuoi = 20;
+strcpy(sv1.ten, "Nguyen Van A");
+sv1.DiemTB = 8.5;
+
+printf("%s\n",sv1.ten);
+printf("%d\n",sv1.tuoi);
+printf("%f",sv1.DiemTB);
+```
+Nhưng phải lưu ý rằng khi gán giá trị cho Union thì giá trị cho một thành viên sẽ ghi đè lên giá trị của thành viên trước đó. Việc ghi đè một thành viên sẽ làm mất dữ liệu của thành viên trước đó. Vậy ta cùng xem kết quả của phép gán phía trên như thế nào.
+
+Output
+```
+
+1091043328
+8.500000
+```
+
+**1 ví dụ về ứng dụng khi kết hợp giữa Struct và Union**
+```C
+#include <stdio.h>
+
+typedef enum { TEMPERATURE_SENSOR, PRESSURE_SENSOR, HUMIDITY_SENSOR } SensorType;
+
+typedef union {
+    struct {
+        float temperature;
+    } temperatureSensor;
+    struct {
+        float pressure;
+    } pressureSensor;
+    struct {
+        float humidity;
+    } humiditySensor;
+} SensorData;
+
+typedef struct {
+    SensorType type;
+    SensorData data;
+} Sensor;
+
+void printSensorInfo(const Sensor *sensor) {
+    switch (sensor->type) {
+        case TEMPERATURE_SENSOR:
+            printf("Temperature Sensor: %.2f°C\n", sensor->data.temperatureSensor.temperature);
+            break;
+        case PRESSURE_SENSOR:
+            printf("Pressure Sensor: %.2f Pa\n", sensor->data.pressureSensor.pressure);
+            break;
+        case HUMIDITY_SENSOR:
+            printf("Humidity Sensor: %.2f%%\n", sensor->data.humiditySensor.humidity);
+            break;
+        default:
+            printf("Unknown sensor type\n");
+    }
+}
+
+int main() {
+    Sensor tempSensor = { TEMPERATURE_SENSOR, .data.temperatureSensor = { 23.5 } };
+    Sensor pressureSensor = { PRESSURE_SENSOR, .data.pressureSensor = { 101325 } };
+    Sensor humiditySensor = { HUMIDITY_SENSOR, .data.humiditySensor = { 45.0 } };
+
+    printSensorInfo(&tempSensor);
+    printSensorInfo(&pressureSensor);
+    printSensorInfo(&humiditySensor);
+
+    return 0;
+}
+```
+Giả sử bạn đang làm việc với một hệ thống nhúng và cần mô tả dữ liệu của các cảm biến khác nhau. Bạn có thể sử dụng union để mô tả các loại cảm biến khác nhau và struct để quản lý thông tin cảm biến.
