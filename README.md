@@ -868,3 +868,116 @@ int main() {
 }
 ```
 Giả sử bạn đang làm việc với một hệ thống nhúng và cần mô tả dữ liệu của các cảm biến khác nhau. Bạn có thể sử dụng union để mô tả các loại cảm biến khác nhau và struct để quản lý thông tin cảm biến.
+
+# Bài 8: Memory layout
+
+Chương trình main.exe ( trên window), main.hex ( nạp vào vi điều khiển) được lưu ở bộ nhớ SSD hoặc FLASH. Khi nhấn run chương trình trên window ( cấp nguồn cho vi điều khiển) thì những chương trình này sẽ được copy vào bộ nhớ RAM để thực thi. Dưới đây là memory layout của máy tính.
+
+![](Memory_layout.png)
+
+Như ta có thể thấy memory_layout được chia thành 5 phân vùng chính, và sau đây chúng ta sẽ đi chi tiết vào từng phân vùng.
+
+## 1, Text Segment
+
++ là nơi chưa tất cả mã lệnh của chương trình.
++ có tính chất read_only có nghĩa là chỉ cho phép đọc, Điều này có nghĩa là chương trình không thể thay đổi mã lệnh của chính nó trong quá trình thực thi
++ là chỗ để lưu **hằng số global** ( lưu ý : **hằng số local** thì được lưu ở stack ), và lưu các chuỗi kí tự hằng. 
+ví dụ: 
+```C
+char *ptr = "hello world"; 
+// không thể thay đổi được chuỗi này bởi vì nó được lưu trong text segment
+```
+## 2, Data segment ( data )
+
++ Vùng này có tên là **Initialized Data Segment (Dữ liệu Đã Khởi Tạo)**, đúng như tên gọi của nó thì vùng này sẽ chỉ lưu các biến **global đã được khởi tạo với giá trị khác 0**
++ Và lưu các biến static được khởi tạo khác 0 ( bất kể là biến static global hay local ).
++ Có tính chất đọc và ghi, có nghĩa là nó có thể đọc và thay đổi giá trị của các biến nằm trong vùng này.
++ Tất cả các biến sẽ được thu hồi sau khi chương trình kết thúc.
+
+## 3, Bss segment ( Bss )
+
++ vùng này có tên là **Uninitialized Data Segment (Dữ liệu Chưa Khởi Tạo)**, đúng như tên gọi thì vùng này sẽ chỉ lưu các **biến global** đã được khởi tạo nhưng chưa gán giá trị hoặc gán giá trị bằng 0.
++ Và lưu các biến static được khởi tạo bằng 0 hoặc không gán giá trị ( bất kể là biến static global hay local ).
++ Có tính chất đọc và ghi, có nghĩa là nó có thể đọc và thay đổi giá trị của các biến nằm trong vùng này.
++ Tất cả các biến sẽ được thu hồi sau khi chương trình kết thúc.
+
+## 4, Stack 
+
+Stack segment là vùng bộ nhớ được sử dụng để lưu trữ dữ liệu tạm thời trong quá trình thực thi chương trình, bao gồm:
++ các biến local, hoặc là tham số truyền vào hàm.
++ Địa chỉ trả về (return address) khi một hàm gọi hàm khác.
++ Có tính chất đọc và ghi, có nghĩa là nó có thể đọc và thay đổi giá trị của các biến nằm trong vùng này.
++ Sau khi kết thúc 1 hàm thì vùng nhớ được cấp phát sẽ bị thu hồi lại 1 cách tự động
+
+**lưu ý:** Stack có giới hạn bộ nhớ, vậy nên chường trình sử dụng quá nhiều stack ( có thể do đệ quy không đúng cách ), nó có thể gây ra stack overflow dẫn đến sự cố chương trình.
+
+ví dụ về stack trong một chương trình C đơn giản:
+```C
+#include <stdio.h>
+
+void foo(int a) {
+    int b = 10;
+    printf("a: %d, b: %d\n", a, b);
+}
+
+int main() {
+    int x = 5;
+    foo(x);
+    return 0;
+}
+```
+Trong chương trình này:
+
++ Khi main bắt đầu, một stack frame được tạo cho hàm main, lưu trữ biến cục bộ x.
++ Khi main gọi foo, một stack frame mới được tạo cho foo, lưu trữ tham số a và biến cục bộ b.
++ Sau khi foo kết thúc, stack frame của nó bị giải phóng, và chương trình quay trở lại main.
+
+## 5, HEAP 
+Tại sao phải sử dụng đến Heap?
+Ví dụ bạn muốn nhập 1 tên người dùng rồi sau đó in ra vậy bạn phải làm cách nào. Ở đây nếu bạn sử dụng mảng thông thường thì nó khá bất tiện và tốn bộ nhớ vì ta không thể biết trước độ dài của chuỗi sẽ nhập vào. Vậy ở đây ta sẽ phải cấp phát động một vùng nhớ và đó là lí do ta phải cần dùng đến **HEAP**.
+
+Heap segment là vùng bộ nhớ được sử dụng cho việc cấp phát bộ nhớ động, nghĩa là bộ nhớ được cấp phát trong thời gian chạy chương trình, thường thông qua các hàm như malloc, calloc, realloc trong C/C++ và new trong C++.
+
+Khi bạn cần bộ nhớ động, Hệ điều hành hoặc trình quản lý bộ nhớ của runtime sẽ tìm một khối bộ nhớ đủ lớn trên heap và trả về địa chỉ đầu tiên của khối bộ nhớ đó cho chương trình. Cú pháp ví dụ sẽ như sau:
+```C
+int *ptr = (int *)malloc(sizeof(int) * 10); // Cấp phát bộ nhớ cho 10 số nguyên
+```
+
+Cụ thể ở đây hiểu đơn giản là bạn sẽ khai báo một con trỏ và rồi trỏ nó tới vùng nhớ mới được cấp phát trên HEAP thôi chứ không có gì khó hiểu cả.
+
+Các bạn có biết tại sao ở đây ta lại phải ép kiểu cho vùng nhớ mới được cấp phát không? Đó là bởi vì khi cấp phát vùng nhớ thì giá trị trả về sẽ là kiểu con trỏ void và ví thế ta phải ép kiểu nó về kiểu dữ liệu mà ta mong muốn và như trong ví dụ thì ta ép kiểu về con trỏ int*.
+
+Và đặc biệt là sau khi sử dụng vùng bộ nhớ đã được cấp phát thì ta phải dùng hàm **free()** để thu hồi vùng nhớ. Tại vì sao? bởi vì vùng nhớ ở **heap** không có chức năng tự thu hồi như stack, và như vậy nếu ta sử dụng quá nhiều mà không thu hồi thì sẽ dẫn đến hiện tượng memory leak.    
+
+**memory leak là gì ?** Memory leak là hiện tượng xảy ra khi một chương trình máy tính không giải phóng vùng nhớ mà nó đã cấp phát động (dynamically allocated memory) sau khi không còn cần thiết sử dụng nữa. Điều này dẫn đến việc vùng nhớ bị lãng phí, không thể được tái sử dụng, gây ra sự giảm hiệu suất của chương trình và trong một số trường hợp có thể làm đầy bộ nhớ của hệ thống, dẫn đến crash hoặc các hành vi không mong muốn khác.
+
+Ngoài hàm **malloc** dùng để cấp phát động thì ta còn có hai hàm khác đó là **calloc** và **realloc**. 
+
+Cụ thể hàm **calloc** cũng y hệt hàm **malloc** về chức năng cũng như cách sử dụng, chỉ khác ở chỗ là các phần bộ nhớ của hàm calloc được cấp phát nhưng không được sử dụng thì sẽ được điền với giá trị 0, còn đối với hàm malloc thì sẽ mang giá trị rác.
+
+Còn hàm **realloc** thì nó dùng trong việc ta muốn cấp phát thêm vùng nhớ thì ta sẽ sử dụng đến nó. Ví dụ:
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int *ptr = malloc(5 * sizeof(int)); // Cấp phát bộ nhớ cho 5 số nguyên
+    if (ptr == NULL) {
+        printf("Memory allocation failed\n");
+        return 1;
+    }
+
+    // Cấp phát lại bộ nhớ để chứa 10 số nguyên
+    ptr = realloc(ptr, 10 * sizeof(int));
+    if (ptr == NULL) {
+        printf("Reallocation failed\n");
+        return 1;
+    }
+
+    // Sử dụng bộ nhớ đã cấp phát...
+
+    free(ptr); // Giải phóng bộ nhớ
+    return 0;
+}
+```
+
