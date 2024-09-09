@@ -980,4 +980,34 @@ int main() {
     return 0;
 }
 ```
+# Bài 9: Linked list
 
+**Phần này mình sẽ nói nhanh qua về Linked list, ưu và nhước điểm của nó**
+
+**Linked list là gì?** 
+Linked list là một cấu trúc dữ liệu động, trong đó các phần tử (nodes) được liên kết với nhau qua các con trỏ. Mỗi node trong linked list chứa hai phần chính: dữ liệu và con trỏ đến node tiếp theo (trong trường hợp singly linked list) hoặc con trỏ đến cả node trước và node sau (trong trường hợp doubly linked list).
+
+Linked list sẽ giải quyết được một số nhược điểm của mảng ví dụ như sử dụng bộ nhớ linh hoạt không phải đặt trước một size nhất định như mảng, dễ dàng thêm hoặc xóa các phần tử trong chuỗi,...
+
+Định nghĩa một node trong C
+```C
+typedef struct node
+{
+    int value; // đây là phần data 
+    struct node *next; // đây là con trỏ dùng để trỏ tới node tiếp theo 
+} node;
+```
++ data ở đây các bạn có thể khai báo bất kể loại dữ liệu nào ví dụ như: char, float,... kể cả 1 Struct khác.
++ struct node *next; đây là con trỏ trỏ tới node tiếp theo, và để có một chuỗi linked list thì nó phải có cùng kiểu dữ liệu với nhau nên vì thế đây là sẽ phải là con trỏ kiểu node.
+
+**Về ưu điểm của linked list**
++ **Cấp phát động**: Dữ liệu được cấp phát động, nghĩa là không cần phải xác định trước kích thước của linked list như mảng tĩnh. Ta có thể thêm hoặc xóa phần tử một cách linh hoạt mà không phải lo lắng về việc tràn bộ nhớ.
++ **Dễ dàng thêm/xóa phần tử**: Thêm hoặc xóa phần tử ở đầu hoặc giữa linked list không yêu cầu dịch chuyển các phần tử khác, vì chỉ cần cập nhật con trỏ, điều này làm giảm chi phí thao tác so với mảng.
++ Tiết kiệm không gian với các cấu trúc lớn: Khi có nhiều thao tác thêm/xóa dữ liệu, linked list thường tiết kiệm hơn mảng do không cần cấp phát dư thừa không gian bộ nhớ.
+
+**Về nhược điểm của linked list**
++ **Truy cập phần tử chậm hơn mảng:** Để truy cập một phần tử bất kỳ, cần duyệt qua toàn bộ linked list từ đầu đến phần tử đó, dẫn đến chi phí O(n), trong khi mảng có thể truy cập trực tiếp phần tử qua chỉ số với chi phí O(1).
++ **Sử dụng nhiều bộ nhớ hơn:** Mỗi node của linked list cần thêm bộ nhớ cho con trỏ (hoặc hai con trỏ với doubly linked list), làm tăng mức tiêu thụ bộ nhớ so với mảng khi kích thước dữ liệu nhỏ.
++ **Khó thực hiện thao tác đảo ngược:** Đảo ngược linked list phức tạp hơn so với đảo ngược mảng, do phải thay đổi các con trỏ giữa các node.
+
+**chú ý: Về các thao tác tạo, thêm, sửa, xóa,... trong linked list khá là dài nên em có để hết trong phần thư mục code.**
