@@ -1010,4 +1010,258 @@ typedef struct node
 + **Sử dụng nhiều bộ nhớ hơn:** Mỗi node của linked list cần thêm bộ nhớ cho con trỏ (hoặc hai con trỏ với doubly linked list), làm tăng mức tiêu thụ bộ nhớ so với mảng khi kích thước dữ liệu nhỏ.
 + **Khó thực hiện thao tác đảo ngược:** Đảo ngược linked list phức tạp hơn so với đảo ngược mảng, do phải thay đổi các con trỏ giữa các node.
 
+**Ứng dụng của linked list trong lập trình**
++ Ứng dụng lớn nhất của linked list có lẽ là cấp phát động, điều này rất có ích trong việc quản lý một danh sách ví dụ như các bài toán về quản lí danh sách Sinh Viên. Nó có thể giúp thêm sửa xóa các phần từ một cách linh hoạt mà không bị cố định như mảng thông thường.
++ Cài đặt các cấu trúc dữ liệu khác: Danh sách liên kết thường được sử dụng làm nền tảng để cài đặt các cấu trúc dữ liệu phức tạp hơn như: stack, queue,...
++ Thích hợp sử dụng trong các hệ thống có tài nguyên hạn chế như hệ thống nhúng vì khả năng cấp phát bộ nhớ linh hoạt, Điều này giúp tránh lãng phí bộ nhớ so với mảng, đặc biệt là khi chúng ta ko thể biết trước số lượng phẩn từ của mảng cần sử dụng.
+
 **chú ý: Về các thao tác tạo, thêm, sửa, xóa,... trong linked list khá là dài nên em có để hết trong phần thư mục code.**
+
+# Bài 10: Stack-Queue
+
+## Stack
+
+Stack là gì?
+
+Stack (Ngăn xếp) là một cấu trúc dữ liệu trừu tượng hoạt động theo nguyên tắc LIFO (Last In, First Out), nghĩa là phần tử được thêm vào sau cùng sẽ được lấy ra đầu tiên. Nó giống như việc xếp các chồng đĩa: đĩa bạn đặt vào sau cùng sẽ được lấy ra trước tiên.
+
+Các thao tác cơ bản của Stack
++ **Push**: Thêm một phần tử vào đỉnh của ngăn xếp.
++ **Pop**: Loại bỏ và trả về phần tử ở đỉnh ngăn xếp.
++ **Peek**/**Top**: Trả về phần tử ở đỉnh mà không loại bỏ nó.
++ **IsEmpty**: Kiểm tra xem ngăn xếp có rỗng hay không.
++ **IsFull**: Kiểm tra xem ngăn xếp có đầy không (nếu stack có giới hạn kích thước).
+
+Ví dụ về một Stack khai báo bằng mảng và các thao tác cơ bản:
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 5  // Kích thước tối đa của ngăn xếp
+
+/*Định nghĩa một stack bảo gồm mảng có Max phần tử và vị trí của đỉnh*/
+typedef struct Stack {
+    int items[MAX];
+    int top;
+} Stack;
+
+/*Khởi tạo Stack và gán giá trị của top bằng -1 vì ban đầu ở đây chưa có phần từ nào được thêm vào cả.*/
+void initialize(Stack *s) {
+    s->top = -1;
+}
+
+/*Hàm kiểm tra xem stack có full không bằng cách kiểm tra xem vị trí của top có bằng số size-1 không */
+int is_full(Stack *s) {
+    return s->top == MAX - 1;
+}
+
+/*Hàm kiểm tra xem Stack có rỗng không bằng cách check xem vị trí của top có bằng -1 không*/
+int is_empty(Stack *s) {
+    return s->top == -1;
+}
+
+/*Hàm push một phần từ vào stack:
++ đầu tiên check xem stack có đầy không, nếu có thì trả về luôn
++ Nếu ko thì chúng ta sẽ tăng vị trí của top stack lên và gán giá trị cho nó, lưu ý ở đây là lệnh tăng giá trị top trước rồi mới gán. */
+void push(Stack *s, int value) {
+    if (is_full(s)) {
+        printf("Stack overflow\n");
+    } else {
+        s->items[++(s->top)] = value;
+    }
+}
+
+/*Hàm pop một phần tử ra khỏi stack:
++ Đầu tiên check xem stack có rỗng không, nếu rỗng thì trả về luôn
++ Tiếp theo thì chúng ta sẽ pop 1 phần từ ra khỏi stack rồi mới giảm vị trí của top xuống*/
+int pop(Stack *s) {
+    if (is_empty(s)) {
+        printf("Stack underflow\n");
+        return -1;
+    } else {
+        return s->items[(s->top)--];
+    }
+}
+
+/*Hàm kiểm tra xem vị trí của top đang là bao nhiêu, hàm này khá đơn giản khi chỉ cần truyền một con trỏ vào và kiểm tra giá trị của top rồi trả về thôi */
+int peek(Stack *s) {
+    if (is_empty(s)) {
+        printf("Stack is empty\n");
+        return -1;
+    } else {
+        return s->items[s->top];
+    }
+}
+
+int main() {
+    Stack stack;
+    initialize(&stack);
+
+    push(&stack, 10);
+    push(&stack, 20);
+    push(&stack, 30);
+
+    printf("Top element is: %d\n", peek(&stack));
+    printf("Popped element is: %d\n", pop(&stack));
+    printf("Top element after pop: %d\n", peek(&stack));
+
+    return 0;
+}
+```
+Output
+```
+Top element is: 30
+Popped element is: 30
+Top element after pop: 20
+```
+
+**Ứng dụng của Stack.**
+
+Tuy là một cấu trúc dữ liệu khá đơn giản nhưng nếu chúng ta biết cách áp dụng thì cấu trúc dư liệu này rất có lợi.
++ **Đảo ngược chuỗi**: Stack có thể được sử dụng để đảo ngược các chuỗi hoặc các dãy số.Ví dụ: Khi đọc từng ký tự của chuỗi vào stack, sau đó lấy chúng ra theo thứ tự LIFO sẽ cho ra chuỗi đảo ngược.
++ **Lưu trạng thái chương trình**: Trong các ngôn ngữ lập trình, stack lưu trữ các thông tin về biến cục bộ, địa chỉ trở về của hàm, và các thông tin khác. Đây chính là lý do ngăn xếp gọi hàm (call stack) được sử dụng trong quá trình thực thi chương trình.
++ **Kiểm tra tính đối xứng**: Stack có thể được dùng để kiểm tra tính đối xứng của các dấu ngoặc trong biểu thức, ví dụ: kiểm tra xem dấu ngoặc (), {}, [] có khớp nhau hay không.
+
+## Queue
+
+Queue là gì?
+
+Cấu trúc dữ liệu QUEUE (hàng đợi) là một cấu trúc dữ liệu FIFO (First In First Out), có nghĩa là phần tử được đưa vào trước sẽ được lấy ra trước. Hàng đợi được ứng dụng rộng rãi trong nhiều hệ thống và thuật toán, chẳng hạn như quản lý hàng đợi người dùng trong hệ thống hoặc xử lý các luồng công việc theo thứ tự.
+
+Một số thao tác cơ bản của QUEUE:
++ **Enqueue**: Thêm một phần tử vào cuối hàng đợi.
++ **Dequeue**: Lấy và loại bỏ phần tử đầu tiên ra khỏi hàng đợi.
++ **Peek** (hoặc Front): Lấy phần tử đầu tiên nhưng không loại bỏ nó khỏi hàng đợi.
++ **IsEmpty**: Kiểm tra xem hàng đợi có rỗng hay không.
++ **Size**: Trả về số lượng phần tử trong hàng đợi.
+
+Ví dụ về một Queue khai báo bằng mảng và các thao tác cơ bản:
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+/*Định nghĩa một Queue bao gồm một mảng item, 
+một size của mảng và hai giá trị đánh dấu đầu và cuối hàng đợi*/
+typedef struct Queue {
+    int* items;
+    int size;
+    int front, rear;
+} Queue;
+
+/*Khởi tạo một Queue bao gồm:
++ Cấp phát động một mảng với số lượng phần tử size
++ gán vị trí của front và rear bằng -1 nghĩa là queue đang rỗng */
+void initialize(Queue *queue, int size) 
+{
+    queue->items = (int*) malloc(sizeof(int)* size);
+    queue->front = -1;
+    queue->rear = -1;
+    queue->size = size;
+}
+
+/*Kiểm tra xem Queue có rỗng không bằng cách kiểm tra giá trị của phần tử front,
+ nếu bằng -1 thì là rỗng còn không thì thôi*/
+int is_empty(Queue queue) {
+    return queue.front == -1;
+}
+
+/*Kiểm tra xem Queue có full không bằng cách chia lấy dư
+giá trị của rear nếu mà không dư có nghĩa là bằng 0 và bằng front thì lúc đó mảng full*/
+int is_full(Queue queue) {
+    return (queue.rear + 1) % queue.size == queue.front;
+}
+
+/*hàm thêm phần tử vào Queue 
++ Kiểm tra queue có full không, nếu full rồi thì trả về luôn
++ Tiếp theo kiểm tra xem queue có rỗng không nếu rỗng thì gán cho front và rear bằng 0 có nghĩa là hai giá trị này trỏ tới vị trí đầu tiên của queue
++ Tiếp theo nếu Queue không rỗng thì cứ tăng giá trị của rear lên 1 cho tới cuối mảng
++ Kết thúc các điều kiện thì gán giá trị cho từng phần tử trong Queue*/
+void enqueue(Queue *queue, int value) {
+    if (!is_full(*queue)) {
+        if (is_empty(*queue)) {
+            queue->front = queue->rear = 0;
+        } else {
+            queue->rear = (queue->rear + 1) % queue->size;
+        }
+        queue->items[queue->rear] = value;
+    } else {
+        printf("Queue overflow\n");
+    }
+}
+/* Hàm xóa phần từ ra khỏi Queue
++ Kiểm tra xem queue có rỗng không nếu có rỗng thì xóa làm cái gì nữa
++ Nếu không rỗng thì tiếp tục làm các bước tiếp theo đó là khởi tạo một biến lưu trữ giá trị của phần từ vừa xóa rồi tăng vị trí của front lên 1 đơn vị*/
+int dequeue(Queue *queue) {
+    if (!is_empty(*queue)) {
+        int dequeued_value = queue->items[queue->front];
+        if (queue->front == queue->rear) {
+            queue->front = queue->rear = -1;
+        } else {
+            queue->front = (queue->front + 1) % queue->size;
+        }
+        return dequeued_value;
+    } else {
+        printf("Queue underflow\n");
+        return -1;
+    }
+}
+
+/*Hàm trả về giá trị của đầu mảng thôi*/
+int front(Queue queue) {
+    if (!is_empty(queue)) {
+        return queue.items[queue.front];
+    } else {
+        printf("Queue is empty\n");
+        return -1;
+    }
+}
+
+int main() {
+    Queue queue;
+    initialize(&queue, 3);
+    
+    enqueue(&queue, 10);
+    enqueue(&queue, 20);
+    enqueue(&queue, 30);
+
+    printf("Front element: %d\n", front(queue));
+
+    printf("Dequeue element: %d\n", dequeue(&queue));
+    printf("Dequeue element: %d\n", dequeue(&queue));
+
+    printf("Front element: %d\n", front(queue));
+
+    enqueue(&queue, 40);
+    enqueue(&queue, 50);
+    printf("Dequeue element: %d\n", dequeue(&queue));
+    printf("Front element: %d\n", front(queue));
+
+    return 0;
+}
+```
+
+**Ưu điểm của Queue:**
++ **Đơn giản và dễ cài đặt:** Queue có cấu trúc dữ liệu đơn giản và dễ hiểu, phù hợp cho nhiều tình huống mà thứ tự xử lý dữ liệu là điều quan trọng.
+
++ **Quản lý tài nguyên hiệu quả**: Vì Queue tuân theo nguyên tắc FIFO, nó đảm bảo rằng các tài nguyên được xử lý theo đúng thứ tự, từ đó tránh tình trạng thiếu hụt hoặc quá tải tài nguyên.
+
++ **Thao tác nhanh chóng:** Các thao tác thêm phần tử (enqueue) và loại bỏ phần tử (dequeue) thường thực hiện trong thời gian O(1) với các cài đặt bằng danh sách liên kết hoặc mảng vòng (circular array).
+
+**Ứng dụng của Queue:**
+**Hệ điều hành:**
+
++ Quản lý hàng đợi tiến trình: Hệ điều hành sử dụng Queue để quản lý các tiến trình trong CPU, chẳng hạn như thuật toán điều phối tiến trình theo hàng đợi.
+Quản lý in ấn: Các yêu cầu in từ nhiều tiến trình được đưa vào một hàng đợi in, đảm bảo mỗi yêu cầu được xử lý theo thứ tự.
+
+**Mạng máy tính:**
+
++ Quản lý gói tin: Trong các giao thức mạng như TCP/IP, hàng đợi được sử dụng để lưu trữ và xử lý các gói tin trong khi chúng được truyền giữa các nút mạng.
+Bộ định tuyến (router): Các bộ định tuyến sử dụng Queue để lưu trữ và định tuyến gói tin giữa các mạng khác nhau.
+Hệ thống đa tác vụ:
+ 
+**Hệ thống đời thực**
++ Hệ thống xếp hàng: Các hệ thống bán vé, gọi món ăn tại nhà hàng, hoặc đăng ký khám bệnh đều sử dụng Queue để quản lý thứ tự phục vụ khách hàng.
+
+
+
+
