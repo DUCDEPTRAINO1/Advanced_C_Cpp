@@ -399,7 +399,7 @@ extern int x;  // Tham chiếu đến biến x đã được định nghĩa ở 
 ```
 Chú ý: ***Một lưu ý nữa là đối với các hàm thì cũng có tác dụng tương tự như vậy***
 
-Nếu bạn định nghĩa biến toàn cục trong tệp tiêu đề và sử dụng #include nó ở nhiều tệp nguồn khác nhau, bạn sẽ gặp lỗi liên kết do việc định nghĩa cùng một biến nhiều lần.
+Nếu bạn định nghĩa biến toàn cục trong file header và sử dụng #include nó ở nhiều tệp nguồn khác nhau, bạn sẽ gặp lỗi liên kết do việc định nghĩa cùng một biến nhiều lần.
 
 Và **#ifndef** không có tác dụng trong trường hợp này nha bởi vì là #ifndef chỉ có tác dụng trong 1 file thôi, còn nếu ta #include trong nhiều tệp nguồn khác nhau nó sẽ bị lỗi ở quá trình linker á.
 
@@ -1261,6 +1261,157 @@ Hệ thống đa tác vụ:
  
 **Hệ thống đời thực**
 + Hệ thống xếp hàng: Các hệ thống bán vé, gọi món ăn tại nhà hàng, hoặc đăng ký khám bệnh đều sử dụng Queue để quản lý thứ tự phục vụ khách hàng.
+
+# Bài 10: Class in C++
+**Class là gì?**
+
+Trong C++ class được dùng để định nghĩa một lớp, gần giống như Struct bên C nhưng có nhiều chức năng hơn, Class có thể chứa nhiều kiểu dữ liệu và còn có thể chứa các hàm liên quan. Tóm gọn lại là :
++ Một class bao gồm các thành phần dữ liệu (thuộc tính hay **property**) và các phương thức (hàm thành phần hay **method**).
++ Class thực chất là một kiểu dữ liệu do người lập trình định nghĩa.
+
+ví dụ về 1 class đơn giản: 
+```C
+class HinhChuNhat {
+
+public:
+    double chieuDai;
+    double chieuRong;
+    // Hàm tính diện tích
+    double tinhDienTich() {
+        return chieuDai * chieuRong;
+    }
+    void display();
+};
+
+void HinhChuNhat::display()
+{
+   std::cout << " Hello " << '\n';
+}
+```
+**Constructor là gì ?** 
+
+Constructor hay hàm dựng là một hàm đặc biệt, nó sẽ được gọi ngay khi chúng ta khởi tạo một object. Vậy thì tại sao chúng ta lại cần có constructor?
+
+Nếu không có **constructor** ta phải khởi tạo một object sau đó gán các property và sử dụng, việc này rất tốn thời gian. Constructor sẽ giúp chúng ta giải quyết việc này. Cú pháp khai báo một constructor giống với hàm nhưng không có kiểu dữ liệu trả về
+
+Lưu ý **constructor** phải được khai báo public. Công dụng chính của constructor chính là khởi gán các thuộc tính, vậy nên constructor thường được định nghĩa như sau:
+```C++
+class Person {
+	public:
+	    string firstName;
+	    string lastName;
+	    int age;
+
+	    Person(string _firstName, string _lastName, int _age)
+	    {
+	        firstName = _firstName;
+	        lastName = _lastName;
+	        age = _age;
+	    }
+
+	    void fullname() {
+			cout << firstName << ' ' << lastName;
+	    }
+};
+```
+Constructor cũng có thể định nghĩa thi hành bên ngoài class giống như phương thức vậy:
+
+```C++
+class Person {
+	public:
+	    string firstName;
+	    string lastName;
+	    int age;
+
+	    Person(string _firstName, string _lastName, int _age);
+
+	    void fullname() {
+	        cout << firstName << ' ' << lastName;
+	    }
+};
+
+Person::Person(string _firstName, string _lastName, int _age)
+{
+	firstName = _firstName;
+	lastName = _lastName;
+	age = _age;
+}
+```
+
+Để khởi tạo một object thông qua constructor, ta làm như sau:
+```C++
+Person person("Khiem", "Le", 20);
+```
+
+Như vậy chúng ta không cần phải set từng thuộc tính cho object đó mà khởi tạo trực tiếp qua constructor.
+
+**Destructor là gì?**
+
+Đối với một số ngôn ngữ lập trình khác có thể destructor không phổ biến, nhưng đối với C++, việc được quản lý bộ nhớ một cách hoàn toàn do người lập trình làm chủ thì destructor là vô cùng cần thiết. Hãy thử nghĩ xem, trong số thuộc tính của class bạn định nghĩa có một con trỏ, mảng động… và bạn không sử dụng desctructor thì sẽ như thế nào? Đương nhiên sẽ xảy ra chuyện rò rỉ bộ nhớ và điều này cực kì không tốt. Với destructor bạn có thể xóa con trỏ đi khi object được thu hồi hoặc bạn có thể gọi tường minh destructor.
+
+Cách khai báo destructor cũng giống như đối với constructor nhưng có kí hiệu ~ phía trước:
+
+```C++
+class MyClass {
+    public:
+        MyClass() { // constructor
+            cout << "Constructor is executedn";
+        }
+
+        ~MyClass() { // destructor
+            cout << "Constructor is executedn";
+        }
+};
+
+// Khởi tạo object
+ClassName t; // gọi constructor không tường minh
+// Gọi destructor tường minh
+t.~MyClass();
+```
+
+**Static member là gì?**
+
+y hệt như bên C thì biến **static member** trong class cũng có những chức năng tương tự như biến static local. Đối với class, **biến static** sẽ là thuộc tính dùng chung cho tất cả các đối tượng của class đó, cho dù là không có đối tượng nào tồn tại. Tức là bạn có thể khai báo nhiều object, mỗi object các thuộc tính của nó đều khác nhau nhưng riêng biến static thì chỉ có một và static member tồn tại trong suốt chương trình cho dù có hay không có object nào của nó hay nói ngắn gọn là dùng chung một biến static.
+
+```C
+#include <iostream>
+using namespace std;
+
+class MyClass {
+public:
+    // Biến tĩnh - thuộc về class, không thuộc về đối tượng cụ thể
+    static int count;
+
+    MyClass() {
+        // Mỗi khi một đối tượng được tạo ra, biến tĩnh count sẽ tăng lên
+        count++;
+    }
+
+    // Hàm tĩnh - có thể truy cập mà không cần tạo đối tượng
+    static void showCount() {
+        cout << "Số lượng đối tượng đã tạo: " << count << endl;
+    }
+};
+
+// Khởi tạo biến tĩnh bên ngoài class
+int MyClass::count = 0;
+
+int main() {
+    MyClass obj1;
+    MyClass obj2;
+    MyClass obj3;
+
+    // Gọi hàm tĩnh bằng cách sử dụng tên class
+    MyClass::showCount();  // Sẽ in ra: Số lượng đối tượng đã tạo: 3
+
+    return 0;
+}
+
+```
+
++ **static int count;**: Biến tĩnh count thuộc về class MyClass, không thuộc về đối tượng cụ thể nào. Nó sẽ đếm số lượng đối tượng đã được tạo ra.
++ **static void showCount();**: Hàm tĩnh showCount có thể được gọi trực tiếp thông qua class mà không cần phải tạo đối tượng.
++ **int MyClass::count = 0;**: Biến tĩnh phải được khởi tạo bên ngoài class vì nó thuộc về class, không thuộc về bất kỳ đối tượng cụ thể nào.
 
 
 
