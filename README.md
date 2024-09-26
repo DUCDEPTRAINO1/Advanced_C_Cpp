@@ -1262,7 +1262,7 @@ Hệ thống đa tác vụ:
 **Hệ thống đời thực**
 + Hệ thống xếp hàng: Các hệ thống bán vé, gọi món ăn tại nhà hàng, hoặc đăng ký khám bệnh đều sử dụng Queue để quản lý thứ tự phục vụ khách hàng.
 
-# Bài 10: Class in C++
+# Bài 11: Class in C++
 **Class là gì?**
 
 Trong C++ class được dùng để định nghĩa một lớp, gần giống như Struct bên C nhưng có nhiều chức năng hơn, Class có thể chứa nhiều kiểu dữ liệu và còn có thể chứa các hàm liên quan. Tóm gọn lại là :
