@@ -1413,6 +1413,441 @@ int main() {
 + **static void showCount();**: Hàm tĩnh showCount có thể được gọi trực tiếp thông qua class mà không cần phải tạo đối tượng.
 + **int MyClass::count = 0;**: Biến tĩnh phải được khởi tạo bên ngoài class vì nó thuộc về class, không thuộc về bất kỳ đối tượng cụ thể nào.
 
+# Bài 12: OOP in C++
 
+## 1, Đóng gói (Encapsulation)
 
+**Đóng gói (Encapsulation)** là một trong những tính chất cơ bản của lập trình hướng đối tượng (OOP) trong C++. Nó đề cập đến việc gói gọn dữ liệu và các phương thức (hàm) thao tác trên dữ liệu đó vào trong một thực thể duy nhất gọi là lớp (class).
 
+Mục tiêu chính của đóng gói là bảo vệ dữ liệu bên trong một đối tượng khỏi sự can thiệp trực tiếp từ bên ngoài, chỉ cho phép truy cập hoặc thay đổi thông qua các phương thức cụ thể, thường được gọi là **getter** và **setter**. Việc này giúp quản lý và duy trì tính toàn vẹn của dữ liệu, đồng thời kiểm soát cách dữ liệu được sử dụng trong hệ thống.
+
+**Cấu trúc của tính đóng gói:**
+
+gồm 3 phần:
+
++ **Private** (Riêng tư): Các thành viên trong phần này chỉ có thể được truy cập và thay đổi từ bên trong lớp, tức là chỉ có các phương thức của lớp mới có thể trực tiếp làm việc với chúng.
++ **Protected** (Bảo vệ): Các thành viên được bảo vệ chỉ có thể truy cập bởi các lớp dẫn xuất (lớp con) hoặc từ chính lớp đó.
++ **Public** (Công khai): Các thành viên có thể truy cập từ bất kỳ đâu bên ngoài lớp.
+
+**Lợi ích của đóng gói:**
+
++ **Kiểm soát truy cập**: Đóng gói cho phép kiểm soát cách các thuộc tính và phương thức của đối tượng được truy cập và chỉnh sửa. Điều này giúp ngăn ngừa sự truy cập không hợp lệ hoặc không mong muốn.
++ **Bảo mật dữ liệu**: Bằng cách ẩn các thuộc tính dữ liệu bên trong lớp, đóng gói giúp bảo vệ dữ liệu khỏi sự thay đổi bất hợp pháp từ bên ngoài. Các thao tác trên dữ liệu phải thông qua các phương thức cụ thể, cho phép kiểm soát mọi thay đổi.
++ **Dễ bảo trì**: Đóng gói giúp các thay đổi bên trong lớp không ảnh hưởng đến các phần khác của chương trình. Người dùng chỉ cần làm việc với giao diện công khai (public interface), trong khi các chi tiết bên trong có thể thay đổi mà không làm ảnh hưởng đến phần còn lại của mã nguồn.
++ **Tính mô-đun hóa**: Dữ liệu và các phương thức được gói gọn trong một lớp, giúp chương trình có cấu trúc rõ ràng, dễ hiểu và dễ bảo trì.
+
+ví dụ: 
+```C++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Employee {
+private:
+    string name; // Dữ liệu này chỉ có thể truy cập bên trong class
+    int age;
+    float salary;
+
+public:
+    // Constructor để khởi tạo giá trị cho các thuộc tính
+    Employee(string n, int a, float s) : name(n), age(a), salary(s) {}
+
+    // Getter và setter để truy cập các thuộc tính
+    void setName(string n) {
+        name = n;
+    }
+
+    string getName() {
+        return name;
+    }
+
+    void setAge(int a) {
+        if (a > 0) {
+            age = a;
+        }
+    }
+
+    int getAge() {
+        return age;
+    }
+
+    void setSalary(float s) {
+        if (s > 0) {
+            salary = s;
+        }
+    }
+
+    float getSalary() {
+        return salary;
+    }
+
+    // Phương thức hiển thị thông tin
+    void displayInfo() {
+        cout << "Name: " << name << ", Age: " << age << ", Salary: $" << salary << endl;
+    }
+};
+
+int main() {
+    // Tạo đối tượng Employee
+    Employee emp("Alice", 30, 50000);
+
+    // Sử dụng các phương thức public để truy cập và thay đổi dữ liệu
+    emp.setName("Bob");
+    emp.setAge(35);
+    emp.setSalary(60000);
+
+    // Hiển thị thông tin nhân viên
+    emp.displayInfo();
+
+    return 0;
+}
+
+```
+
+## 2, Tính kế thừa (Inheritance)
+
+**Tính kế thừa (Inheritance)** là một trong những tính chất quan trọng của lập trình hướng đối tượng (OOP) trong C++. Nó cho phép một lớp mới (lớp con - derived class) thừa hưởng các thuộc tính và phương thức từ một lớp đã có (lớp cha - base class), giúp tái sử dụng mã nguồn và giảm sự lặp lại.
+
+**Mục đích của tính kế thừa:**
++ **Tái sử dụng mã:** Lớp con không cần viết lại toàn bộ các phương thức và thuộc tính của lớp cha mà có thể kế thừa chúng. Điều này giúp tiết kiệm công sức viết mã và giảm thiểu lỗi.
++ **Mở rộng chức năng:** Lớp con có thể thêm các thuộc tính hoặc phương thức mới, cũng như ghi đè (override) các phương thức của lớp cha để thực hiện các chức năng cụ thể hơn.
++ **Tính đa hình:** Tính kế thừa còn cho phép lớp con thực hiện đa hình, tức là các phương thức của lớp cha có thể được thực thi theo cách khác trong lớp con, mang đến sự linh hoạt trong việc triển khai hành vi của các đối tượng.
+
+**Cú pháp:**
+
+```C++
+class LớpCon : (public / protected / private ) LớpCha {
+    // Các thuộc tính và phương thức của lớp con
+};
+```
+
++ **Public inheritance (kế thừa công khai)**: Các thành viên public của lớp cha sẽ trở thành public trong lớp con, các thành viên protected của lớp cha sẽ trở thành protected trong lớp con.
+
+ví dụ:
+```C++
+class A {
+public:
+    int x;
+protected:
+    int y;
+};
+
+class B : public A {
+    // x sẽ là public trong B, y là protected trong B
+};
+
+```
++ **Protected inheritance (kế thừa bảo vệ)**: Các thành viên public và protected của lớp cha sẽ trở thành protected trong lớp con.
+
+ví dụ:
+```C++
+class A {
+public:
+    int x;
+protected:
+    int y;
+};
+
+class B : protected A {
+    // x và y sẽ là protected trong B
+};
+```
++ **Private inheritance (kế thừa riêng tư)**: Mọi thành viên public và protected của lớp cha sẽ trở thành private trong lớp con.
+
+ví dụ: 
+```C++
+class A {
+public:
+    int x;
+protected:
+    int y;
+};
+
+class B : private A {
+    // x và y sẽ là private trong B
+};
+
+```
+
+**Ví dụ tổng quát** 
+
+ví dụ:
+```C++
+#include <iostream>
+using namespace std;
+
+// Lớp cơ sở (lớp cha)
+class Animal {
+public:
+    void eat() {
+        cout << "Animal is eating." << endl;
+    }
+};
+
+// Lớp dẫn xuất (lớp con) kế thừa lớp Animal
+class Dog : public Animal {
+public:
+    void bark() {
+        cout << "Dog is barking." << endl;
+    }
+};
+
+int main() {
+    Dog myDog;
+
+    // Gọi phương thức của lớp cha
+    myDog.eat();    // Output: Animal is eating.
+
+    // Gọi phương thức của lớp con
+    myDog.bark();   // Output: Dog is barking.
+
+    return 0;
+}
+
+```
+
+**Ghi đè phương thức (Method Overriding):**
+
+Khi lớp con kế thừa lớp cha, nó có thể sử dụng tính đa hình để cho phép gọi các phương thức của lớp con từ con trỏ của lớp cha. Ví dụ dưới đây minh họa việc sử dụng phương thức **virtual** và **override** để thực hiện đa hình.
+
+```C++
+#include <iostream>
+using namespace std;
+
+// Lớp cơ sở với phương thức ảo
+class Animal {
+public:
+    virtual void speak() {
+        cout << "Animal sound" << endl;
+    }
+};
+
+// Lớp dẫn xuất ghi đè phương thức speak()
+class Dog : public Animal {
+public:
+    void speak() override {
+        cout << "Woof!" << endl;
+    }
+};
+
+int main() {
+    Animal* animalPtr = new Dog();
+    animalPtr->speak();  // Output: Woof!
+
+    delete animalPtr;
+    return 0;
+}
+
+```
+
+**Đa kế thừa (Multiple Inheritance):**
+
+C++ cũng hỗ trợ tính năng đa kế thừa, tức là một lớp con có thể kế thừa từ nhiều lớp cha.
+
+ví dụ:
+
+```C++
+class A {
+public:
+    void display() {
+        cout << "Class A" << endl;
+    }
+};
+
+class B {
+public:
+    void show() {
+        cout << "Class B" << endl;
+    }
+};
+
+class C : public A, public B {
+    // Kế thừa từ cả A và B
+};
+
+int main() {
+    C obj;
+    obj.display(); // Gọi phương thức của A
+    obj.show();    // Gọi phương thức của B
+
+    return 0;
+}
+```
+
+## 3, Tính đa hình (Polymorphism)
+
+**Tính đa hình (Polymorphism)** là một trong những đặc trưng quan trọng của lập trình hướng đối tượng (OOP) trong C++. Đa hình cho phép một đối tượng có thể có nhiều hình thái khác nhau, nghĩa là một đối tượng có thể biểu hiện hành vi khác nhau khi được truy cập từ các lớp khác nhau hoặc trong các ngữ cảnh khác nhau.
+
+**Các loại đa hình:**
+
++ **Đa hình thời gian biên dịch (Compile-time polymorphism)**, hay còn gọi là đa hình tĩnh (Static polymorphism): Xảy ra tại thời điểm biên dịch và được thực hiện thông qua nạp chồng hàm (function overloading) hoặc nạp chồng toán tử (operator overloading).
++ **Đa hình thời gian chạy (Run-time polymorphism)**, hay còn gọi là đa hình động (Dynamic polymorphism): Xảy ra tại thời điểm chạy và được thực hiện thông qua hàm ảo (virtual functions) và ghi đè hàm (function overriding).
+
+**Đa hình thời gian biên dịch (Compile-time Polymorphism)**
+
+1. **Nạp chồng hàm (Function Overloading):**
+Nạp chồng hàm là khi có nhiều hàm cùng tên nhưng khác nhau về số lượng tham số hoặc kiểu dữ liệu của tham số.
+
+ví dụ:
+```C++
+#include <iostream>
+using namespace std;
+
+class Calculator {
+public:
+    // Hàm nạp chồng với 2 số nguyên
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    // Hàm nạp chồng với 2 số thực
+    double add(double a, double b) {
+        return a + b;
+    }
+
+    // Hàm nạp chồng với 3 số nguyên
+    int add(int a, int b, int c) {
+        return a + b + c;
+    }
+};
+
+int main() {
+    Calculator calc;
+    cout << "Sum of 2 integers: " << calc.add(3, 4) << endl;          // Gọi hàm add(int, int)
+    cout << "Sum of 2 doubles: " << calc.add(3.5, 4.5) << endl;      // Gọi hàm add(double, double)
+    cout << "Sum of 3 integers: " << calc.add(1, 2, 3) << endl;      // Gọi hàm add(int, int, int)
+    return 0;
+}
+
+```
+
+**Đa hình thời gian chạy (Run-time Polymorphism)**
+
+**1. Ghi đè hàm (Function Overriding):**
+
+Trong đa hình động, khi một class con (derived class) ghi đè lại một phương thức của class cha (base class), việc quyết định gọi phương thức nào (của class cha hay class con) được quyết định tại thời điểm chạy.
+
++ Để thực hiện ghi đè hàm, trong class cha, hàm đó phải được khai báo là virtual.
++ Sau đó, trong class con, bạn có thể viết lại (ghi đè) phương thức này để thực hiện hành vi cụ thể.
+
+ví dụ: 
+```C++
+#include <iostream>
+using namespace std;
+
+class Animal {
+public:
+    // Phương thức ảo (virtual function)
+    virtual void sound() {
+        cout << "Animal makes a sound" << endl;
+    }
+};
+
+class Dog : public Animal {
+public:
+    // Ghi đè phương thức sound() của lớp cha
+    void sound() override {
+        cout << "Dog barks" << endl;
+    }
+};
+
+class Cat : public Animal {
+public:
+    // Ghi đè phương thức sound() của lớp cha
+    void sound() override {
+        cout << "Cat meows" << endl;
+    }
+};
+
+int main() {
+    Animal* animal;
+    Dog dog;
+    Cat cat;
+
+    animal = &dog;
+    animal->sound();  // Output: Dog barks (gọi phương thức của Dog)
+
+    animal = &cat;
+    animal->sound();  // Output: Cat meows (gọi phương thức của Cat)
+
+    return 0;
+}
+```
+
+**Phân tích ví dụ:**
++ Phương thức ảo: Hàm sound() trong lớp Animal được khai báo là virtual. Điều này cho phép nó bị ghi đè trong các class con như Dog và Cat.
++ Con trỏ class cha: Con trỏ animal trỏ đến các đối tượng của class con (Dog và Cat), nhưng tại thời điểm chạy, nó sẽ gọi phương thức tương ứng của class con mà nó trỏ đến (dù bản chất con trỏ là của class cha).
+
+**Tính đa hình và các khái niệm liên quan:**
++ Late Binding (Liên kết muộn): Trong đa hình thời gian chạy, quyết định gọi phương thức nào (của lớp cha hay lớp con) được thực hiện tại thời điểm chạy (run-time) dựa trên đối tượng thực sự mà con trỏ trỏ đến. Điều này gọi là liên kết muộn.
+
++ Early Binding (Liên kết sớm): Với đa hình thời gian biên dịch, quyết định phương thức nào sẽ được gọi được thực hiện tại thời điểm biên dịch.
+
+## 4, Tính Trừu Tượng (Abstraction)
+
+**Trừu tượng hóa (Abstraction)** là một trong những đặc trưng quan trọng của lập trình hướng đối tượng (OOP). Nó cho phép bạn tập trung vào những chi tiết quan trọng của đối tượng mà bỏ qua những phần không cần thiết hoặc phức tạp. Điều này giúp làm đơn giản hóa quá trình thiết kế hệ thống bằng cách ẩn đi sự phức tạp bên trong và chỉ cung cấp những giao diện (interface) cần thiết cho người dùng.
+
+**Mục đích của trừu tượng hóa:**
++ **Giấu đi chi tiết thực hiện:** Người dùng chỉ cần biết đối tượng có thể làm gì thông qua giao diện, mà không cần quan tâm nó làm như thế nào.
++ **Đơn giản hóa hệ thống:** Tập trung vào các khái niệm hoặc chức năng cần thiết, giúp lập trình viên dễ dàng hiểu và phát triển chương trình.
++ **Tăng tính bảo trì và mở rộng:** Bằng cách chỉ cung cấp giao diện cần thiết, các thay đổi bên trong không ảnh hưởng đến người sử dụng lớp, giúp việc bảo trì dễ dàng hơn.
+
+**Cách thực hiện trừu tượng hóa:**
+
+**Lớp trừu tượng (Abstract Class):** Một lớp có thể chứa một hoặc nhiều phương thức trừu tượng (không có định nghĩa chi tiết) để cho các lớp con kế thừa và cung cấp phần triển khai cụ thể.
+
+ví dụ:
+```C++
+#include <iostream>
+using namespace std;
+
+// Lớp trừu tượng Vehicle (Phương tiện giao thông)
+class Vehicle {
+public:
+    // Phương thức trừu tượng
+    virtual void start() = 0; // Phương tiện khởi động như thế nào (hàm ảo thuần túy)
+};
+
+// Lớp con Car (Xe ô tô) kế thừa từ Vehicle
+class Car : public Vehicle {
+public:
+    void start() override {
+        cout << "Car starts with a key or button." << endl;
+    }
+};
+
+// Lớp con Bicycle (Xe đạp) kế thừa từ Vehicle
+class Bicycle : public Vehicle {
+public:
+    void start() override {
+        cout << "Bicycle starts by pedaling." << endl;
+    }
+};
+
+int main() {
+    Vehicle* vehicle1 = new Car();
+    Vehicle* vehicle2 = new Bicycle();
+
+    vehicle1->start(); // Output: Car starts with a key or button.
+    vehicle2->start(); // Output: Bicycle starts by pedaling.
+
+    delete vehicle1;
+    delete vehicle2;
+    return 0;
+}
+```
+
+**Phân tích:**
+
++ Lớp Vehicle là một lớp trừu tượng với phương thức start(). Lớp này chỉ định nghĩa rằng mọi phương tiện giao thông phải có cách "khởi động", nhưng không chỉ rõ cụ thể khởi động như thế nào.
++ Lớp Car và Bicycle là các lớp con kế thừa từ Vehicle và triển khai cụ thể phương thức start() theo cách riêng của từng loại phương tiện. Xe ô tô khởi động bằng chìa khóa hoặc nút bấm, trong khi xe đạp khởi động bằng cách đạp bàn đạp.
++ Trừu tượng hóa giúp giấu đi chi tiết thực hiện của từng loại phương tiện. Người dùng chỉ cần biết rằng phương tiện có thể khởi động mà không cần quan tâm đến chi tiết cách khởi động.
+
+C**ác khái niệm liên quan đến trừu tượng hóa:**
+
+Phương thức trừu tượng (Pure Virtual Function): Một phương thức trừu tượng là phương thức chỉ có định nghĩa trong lớp cha và không có phần thân, bắt buộc các lớp con phải định nghĩa lại. Trong C++, phương thức trừu tượng được biểu diễn bằng cách sử dụng toán tử = 0:
+```C++
+virtual void function() = 0;
+```
+
+Lớp trừu tượng (Abstract Class): Một lớp được gọi là lớp trừu tượng nếu nó chứa ít nhất một phương thức trừu tượng. Bạn không thể tạo đối tượng từ một lớp trừu tượng.
